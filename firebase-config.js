@@ -12,4 +12,4 @@ export const firebaseConfig = {
 
 // Set this to your own Firebase Authentication UID after your first admin account is created.
 // Never use an email address as a client-side admin security check. Firestore rules must enforce this UID too.
-export const ADMIN_UID = "PASTE_YOUR_ADMIN_UID_HERE";
+export const ADMIN_UID = "4VLdd5tDOYfzVPzlwPhn7bFpRcm1";
