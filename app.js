@@ -45,7 +45,19 @@ if(configured){
 function updateProfileUI(){if(currentUser){const name=currentUser.displayName||currentUser.email.split('@')[0];$('#profileName').textContent=name;$('#profileSub').textContent='Your progress is saved on this device';$('#avatar').textContent=name.charAt(0).toUpperCase();$('#authOpen').title='Account: '+currentUser.email}else{$('#profileName').textContent='Guest learner';$('#profileSub').textContent='Sign in to sync your account';$('#avatar').textContent='G'}}
 function openAuth(force=false){if(currentUser&&!force){if(confirm('Log out of KritPrep?'))signOut(auth).then(()=>toast('You have been logged out.')).catch(e=>toast(errorMessage(e)));return}$('#authModal').classList.add('show');$('#authModal').setAttribute('aria-hidden','false');$('#authClose').style.display=currentUser?'':'none';if(!currentUser)setTimeout(()=>$('#authEmail').focus(),0)}
 function closeAuth(){if(!currentUser)return;$('#authModal').classList.remove('show');$('#authModal').setAttribute('aria-hidden','true');$('#authMessage').textContent='';$('#authMessage').style.color=''}
-$('#authOpen').addEventListener('click',openAuth);$('#authClose').addEventListener('click',closeAuth);$('#authModal').addEventListener('click',e=>{if(e.target.id==='authModal')closeAuth()});
+$('#authOpen').addEventListener('click',()=>{
+  if(currentUser){
+    const shouldLogout = confirm('Do you want to log out of KritPrep?');
+
+    if(shouldLogout){
+      signOut(auth)
+        .then(()=>toast('You have been logged out.'))
+        .catch(e=>toast(errorMessage(e)));
+    }
+  }else{
+    openAuth(true);
+  }
+});$('#authClose').addEventListener('click',closeAuth);$('#authModal').addEventListener('click',e=>{if(e.target.id==='authModal')closeAuth()});
 function setAuthMode(mode){authMode=mode;$$('[data-auth-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.authTab===mode));$('#nameField').classList.toggle('hidden',mode!=='signup');$('#authTitle').textContent=mode==='login'?'Welcome back.':'Create your account.';$('#authSubtitle').textContent=mode==='login'?'Sign in to keep your study journey in sync.':'Your next chapter starts with a free account.';$('#authSubmit').textContent=mode==='login'?'Log in':'Create account';$('#authPassword').autocomplete=mode==='login'?'current-password':'new-password';$('#authMessage').textContent='';$('#authMessage').style.color=''}
 $$('[data-auth-tab]').forEach(b=>b.addEventListener('click',()=>setAuthMode(b.dataset.authTab)));
 function errorMessage(e){const code=e?.code||'';return ({'auth/invalid-email':'Please enter a valid email address.','auth/user-not-found':'No account found with this email. Create an account first.','auth/wrong-password':'That password does not look right. Try again.','auth/invalid-credential':'Email or password is incorrect. Check both and try again.','auth/email-already-in-use':'This email already has an account. Switch to Log in.','auth/weak-password':'Use a password with at least 6 characters.','auth/popup-closed-by-user':'Google sign-in was closed before finishing. Try again.','auth/unauthorized-domain':'This website domain is not authorized. Add the exact GitHub Pages domain in Firebase Authentication → Settings → Authorized domains.','auth/popup-blocked':'Your browser blocked the Google sign-in window. Allow pop-ups for this site and try again.','auth/operation-not-allowed':'This sign-in method is disabled. Enable it in Firebase Authentication → Sign-in method.','auth/network-request-failed':'Network error. Check your connection and try again.','auth/too-many-requests':'Too many attempts. Wait a little before trying again.','auth/invalid-api-key':'Firebase API key is invalid. Check firebase-config.js.'})[code]||'Something went wrong. Please try again.'}
