@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /app.html
-Sitemap: https://kritprep.github.io/kritprep/sitemap.xml
